@@ -1,10 +1,11 @@
 import chalk from "chalk";
+import { execSync } from "child_process";
 import { Command } from "commander";
 import { existsSync, mkdirSync } from "fs";
 import * as readline from "readline";
 
 enum Templates {
-  "react" = "https://github.com/Dominik-Reinert/react-template",
+  "react" = "react",
 }
 
 export function initCreateProject(project: Command): void {
@@ -17,13 +18,22 @@ export function initCreateProject(project: Command): void {
 async function createProject(): Promise<void> {
   const rl: readline.Interface = getReadline();
   const directory: string = await inputDirectory(rl);
-  const template: string = await inputTemplate(rl);
+  const stringTemplate: string = await inputTemplate(rl);
   await verifyInputDirectory(rl, directory);
-  verifyInputTemplate(template);
+  const template = getTemplateFromString(stringTemplate);
+  const repository = getTemplateRepository(template);
   rl.close();
   console.log(
-    chalk.blue(`got inputs: directory: ${directory}, template: ${template}`)
+    chalk.blue(
+      `got inputs: directory: ${directory}, template: ${stringTemplate}`
+    )
   );
+  console.log(
+    chalk.blue(
+      `Continuing with checking out the template repository to the directory...`
+    )
+  );
+  await cloneTemplate(directory, repository);
 }
 
 function getReadline(): readline.Interface {
@@ -91,8 +101,29 @@ function inputShouldCreateDirectory(rl: readline.Interface): Promise<string> {
   );
 }
 
-function verifyInputTemplate(template: string): void {
-  if (!Object.keys(Templates).includes(template)) {
-    throw new Error(`Cannot find template ${template}!`);
+function getTemplateFromString(template: string): Templates {
+  switch (template) {
+    case Templates.react:
+      return Templates.react;
+    default:
+      throw new Error(`Template '${template}' is invalid!`);
   }
+}
+
+function getTemplateRepository(template: Templates): string {
+  switch (template) {
+    case Templates.react:
+      return "https://github.com/Dominik-Reinert/react-template";
+    default:
+      throw new Error(`Template '${template}' has no repository!`);
+  }
+}
+
+async function cloneTemplate(
+  directory: string,
+  repository: string
+): Promise<void> {
+  execSync(`git clone ${repository} ${directory}`, {
+    stdio: "inherit",
+  });
 }
