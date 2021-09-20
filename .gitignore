@@ -138,3 +138,5 @@ dist
 # node modules
 
 ./node-modules
+
+./test-project

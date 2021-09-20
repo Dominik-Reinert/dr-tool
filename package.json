@@ -6,7 +6,7 @@
   "author": "Dominik Reinert <dominik.reinert.merzig@googlemail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc --project tsconfig.json"
+    "build": "tsc --project tsconfig.json | npm i -g"
   },
   "dependencies": {
     "chalk": "^4.1.2",
