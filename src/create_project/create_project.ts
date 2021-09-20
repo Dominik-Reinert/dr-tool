@@ -3,6 +3,10 @@ import { Command } from "commander";
 import { existsSync, mkdirSync } from "fs";
 import * as readline from "readline";
 
+enum Templates {
+  "react" = "https://github.com/Dominik-Reinert/react-template",
+}
+
 export function initCreateProject(project: Command): void {
   project
     .command("create-project")
@@ -15,6 +19,7 @@ async function createProject(): Promise<void> {
   const directory: string = await inputDirectory(rl);
   const template: string = await inputTemplate(rl);
   await verifyInputDirectory(rl, directory);
+  verifyInputTemplate(template);
   rl.close();
   console.log(
     chalk.blue(`got inputs: directory: ${directory}, template: ${template}`)
@@ -84,4 +89,10 @@ function inputShouldCreateDirectory(rl: readline.Interface): Promise<string> {
     rl,
     `Directory does not exist. Should create? (y|n) `
   );
+}
+
+function verifyInputTemplate(template: string): void {
+  if (!Object.keys(Templates).includes(template)) {
+    throw new Error(`Cannot find template ${template}!`);
+  }
 }
