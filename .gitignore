@@ -139,4 +139,6 @@ dist
 
 ./node-modules
 
-./test-project
+node-modules/
+
+test-project/
